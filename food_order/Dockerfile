@@ -1,0 +1,4 @@
+FROM eclipse-temurin:17-jdk
+COPY target/*.jar /
+EXPOSE 8080
+ENTRYPOINT ["java","-jar","/food_order-1.0-SNAPSHOT.jar"]
