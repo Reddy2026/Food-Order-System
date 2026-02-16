@@ -1,0 +1,34 @@
+pipeline {
+    agent any
+    environment {
+        DOCKER_IMAGE = 'vasakkal/food_order'
+        DOCKER_TAG = "${BUILD_NUMBER}"
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', credentialsId: 'github-creds', url: 'https://github.com/Reddy2026/Food-Order-System.git'
+            }
+        }
+        stage('Build') {
+    steps {
+        dir('food_order') {
+            sh 'mvn clean package -DskipTests'
+            sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} -t ${DOCKER_IMAGE}:latest ."
+        }
+    }
+}
+    stage('Push Docker Image') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'Docker_cred', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh """
+                        echo \$DOCKER_PASS | docker login -u \$DOCKER_USER --password-stdin
+                        docker push ${DOCKER_IMAGE}:${DOCKER_TAG}
+                        docker push ${DOCKER_IMAGE}:latest
+                        docker logout
+                    """
+                }
+            }
+    }
+}
+}
