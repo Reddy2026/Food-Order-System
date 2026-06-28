@@ -1,0 +1,17 @@
+name: food_order
+on:
+  push:
+  pull_request:
+    branches: 
+      - main
+
+jobs:
+  foodorder_app:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Show files
+        run: |
+          pwd
+          ls -la
+          find . -name "pom.xml"
